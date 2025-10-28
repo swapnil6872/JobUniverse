@@ -8,6 +8,8 @@ import User from "./models/userModel.js";
 import passport from 'passport';
 import LocalStrategy from 'passport-local'
 import session from'express-session'
+import companyRoute from './routes/companyRoute.js';
+import applicationRoute from './routes/applicationRoute.js';
 
 
 const app = express();
@@ -47,6 +49,8 @@ passport.deserializeUser(User.deserializeUser());
 
 app.use('/api/jobs', jobRoutes);
 app.use('/api/user', userRoute);
+app.use("/api/company", companyRoute);
+app.use("/api/application", applicationRoute);
 
 
 app.use((err, req, res, next) => {

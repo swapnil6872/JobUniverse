@@ -62,6 +62,7 @@ import { Link, useNavigate } from 'react-router-dom'; // if using React Router
 import { useDispatch } from 'react-redux';
 import { setUser } from '../features/auth/authSlice';
 import toast, { Toaster } from 'react-hot-toast';
+import Profile from '../pages/Profile';
 
 export default function PopoverUser({ user }) {
   const [anchorEl, setAnchorEl] = React.useState(null);
@@ -79,9 +80,9 @@ export default function PopoverUser({ user }) {
   const id = open ? 'user-popover' : undefined;
 
   return (
-    <div>
-      <Button aria-describedby={id} onClick={handleClick} className="p-0">
-        <Avatar alt={user.name} src="/static/images/avatar/1.jpg" />
+    <div className='ml-[-10px]'>
+      <Button aria-describedby={id} onClick={handleClick} className="p-0" >
+        <Avatar  alt={user.name} src="/static/images/avatar/1.jpg" /> &nbsp;  <p className='lg:hidden'>{user.username}</p>
       </Button>
 
       <Popover
@@ -128,10 +129,10 @@ export default function PopoverUser({ user }) {
         {/* Menu Links */}
         <div className="py-1">
           <Link
-            to="/profile"
+            to="/user/profile"
             className="block px-4 py-2 text-sm hover:bg-gray-50"
           >
-            View Profile
+            <Profile/>
           </Link>
           <Link
             to="/applications"

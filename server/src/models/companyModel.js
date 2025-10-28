@@ -8,7 +8,7 @@ const CompanySchema = new Schema({
     },
     logo: {
         type: String,
-        required: true
+        default: 'https://cdn.pixabay.com/photo/2020/03/17/17/36/database-4941302_1280.png',
     },
     website: {
         type: String,
@@ -31,7 +31,7 @@ const CompanySchema = new Schema({
         required: true
     },
     established: {
-        type: Date,
+        type: String,
         required: true
     },
     userId:{

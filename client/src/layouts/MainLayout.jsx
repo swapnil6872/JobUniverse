@@ -6,13 +6,16 @@ function MainLayout() {
 
   return (
     <div className="min-h-screen flex flex-col">
+
       <header>
         <Navbar />
       </header>
+
       <main>
         <Outlet />
       </main>
-      <footer className='mt-auto'>
+
+      <footer className='mt-auto bg-red-500'>
         <Footer />
       </footer>
     </div>
