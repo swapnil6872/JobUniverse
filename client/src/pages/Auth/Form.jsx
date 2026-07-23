@@ -41,7 +41,7 @@ useEffect(() => {
       // dispatch login action here
        try {
             console.log(input)
-            const res = await axios.post(`${USER_API_END_POINT}/login`, input);
+            const res = await axios.post(`${USER_API_END_POINT}/login`, input,{ withCredentials: true });
             console.log(res.data);
             if (res.data.success) {
                 dispatch(setUser(res.data.user))

@@ -63,17 +63,17 @@ const CompanyForm = () => {
       submissionData.append("about", formData.about);
       submissionData.append("noOfEmployees", formData.noOfEmployees);
       submissionData.append("established", formData.established);
-      submissionData.append("industry", JSON.stringify(selectedIndustries));
-
-      const res = await axios.post(`${ADMIN_API_END_POINT}/company/register`, submissionData, {
-        headers: { "Content-Type": "multipart/form-data" },
+      // submissionData.append("industry", JSON.stringify(selectedIndustries));
+      submissionData.append("industry", selectedIndustries);
+      const res = await axios.post(`${ADMIN_API_END_POINT}/company/register`, submissionData, { withCredentials: true,
+        headers: { "Content-Type": "multipart/form-data"  },
       });
 
       console.log("✅ Response:", res.data);
       alert("Company registered successfully!");
     } catch (error) {
       console.error("❌ Error submitting form:", error);
-      alert(error.response?.data?.message || "Something went wrong!");
+      alert(`${error.response?.data?.message}` || "Something went wrong!");
     }
   };
 

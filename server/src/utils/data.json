@@ -1,0 +1,83 @@
+[
+  {
+    "title": "Frontend Developer",
+    "opportunityType": "Job",
+    "openings": 3,
+    "description": {
+      "about": "We are looking for a skilled React.js developer to build modern web applications.",
+      "requirements": "Proficient in React, JavaScript, and Tailwind CSS.",
+      "whoApply": "Candidates with 1+ years of experience or strong project portfolio."
+    },
+    "skills": ["React", "JavaScript", "TailwindCSS"],
+    "salary": {
+      "min": 600000,
+      "max": 1200000
+    },
+    "variables": {
+      "min": 50000,
+      "max": 100000
+    },
+    "perks": ["Remote Work", "Health Insurance", "Flexible Hours"],
+    "startDate": "2025-11-05T00:00:00.000Z",
+    "endDate": "2026-01-05T00:00:00.000Z",
+    "location": ["Bangalore", "Remote"],
+    "locationType": "Hybrid",
+    "employmentType": "Full-time",
+    "company": { "$oid": "68f4964fc2b9c04fcf340ba6" },
+    "recruiter": { "$oid": "652f1a9c8a1b2e0012345678" }
+  },
+  {
+    "title": "Backend Engineer",
+    "opportunityType": "Job",
+    "openings": 2,
+    "description": {
+      "about": "We are hiring a Node.js backend engineer to develop scalable APIs.",
+      "requirements": "Strong in Node.js, Express, and MongoDB. Experience with authentication and JWT.",
+      "whoApply": "Candidates with backend projects or experience with RESTful APIs."
+    },
+    "skills": ["Node.js", "Express", "MongoDB", "JWT"],
+    "salary": {
+      "min": 800000,
+      "max": 1500000
+    },
+    "variables": {
+      "min": 60000,
+      "max": 120000
+    },
+    "perks": ["Free Lunch", "Work From Home Option", "Annual Bonus"],
+    "startDate": "2025-11-10T00:00:00.000Z",
+    "endDate": "2026-02-10T00:00:00.000Z",
+    "location": ["Pune", "Remote"],
+    "locationType": "Hybrid",
+    "employmentType": "Full-time",
+    "company": { "$oid": "68f4e525c2b9c04fcf340ced" },
+    "recruiter": { "$oid": "652f1a9c8a1b2e0012345678" }
+  },
+  {
+    "title": "UI/UX Designer Internship",
+    "opportunityType": "Internship",
+    "openings": 4,
+    "description": {
+      "about": "Join our design team to craft engaging user experiences.",
+      "requirements": "Basic knowledge of Figma, wireframing, and design principles.",
+      "whoApply": "Students or freshers interested in UI/UX design."
+    },
+    "skills": ["Figma", "UI Design", "Prototyping"],
+    "salary": {
+      "min": 10000,
+      "max": 15000
+    },
+    "variables": {
+      "min": 2000,
+      "max": 5000
+    },
+    "perks": ["Certificate", "Flexible Working Hours"],
+    "startDate": "2025-11-15T00:00:00.000Z",
+    "endDate": "2026-01-15T00:00:00.000Z",
+    "location": ["Mumbai"],
+    "locationType": "In-office",
+    "employmentType": "Part-time",
+    "company": { "$oid": "68f5bdf40a751407bc4bf82c" },
+    "recruiter": { "$oid": "652f1a9c8a1b2e0012345678" }
+  }
+]

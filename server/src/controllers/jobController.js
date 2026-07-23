@@ -14,7 +14,7 @@ export const getAllJobs = async (req, res) => {
 
 export const getJobById = async (req, res) => {
     const { id } = req.params;
-    const job = await Job.findById(id).populate("company");
+    const job = await Job.findById(id).populate("company").populate("applications");
 
     if (!job) {
         return res.status(404).json({
@@ -50,6 +50,7 @@ export const createJob = async (req, res) => {
     employmentType,
     company,
     recruiter,
+    applications,
   } = req.body;
 
   const job = await Job.create({
@@ -78,6 +79,7 @@ export const createJob = async (req, res) => {
     employmentType,
     company,
     recruiter,
+    applications
   });
 
   res.status(201).json({
@@ -178,11 +180,12 @@ export const deleteJob = async (req, res) => {
 
 export const getAdminJobs = async (req, res) => {
   console.log('hi')
-  const adminId = req.id || "652f1a9c8a1b2e0012345678"; // assuming set via auth middleware
+  const adminId = req.id ;
+  // || "652f1a9c8a1b2e0012345678"; // assuming set via auth middleware
   console.log(adminId)
   const jobs = await Job.find({ recruiter: adminId })
     .populate("company")
-    .sort({ createdAt: -1 });
+    .sort({ createdAt: -1 }).populate("user");
 
   if (!jobs || jobs.length === 0) {
     return res.status(404).json({

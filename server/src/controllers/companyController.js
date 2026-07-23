@@ -1,11 +1,11 @@
 import Company from '../models/companyModel.js';
-
+import User from '../models/userModel.js';
 
 
 export const registerCompany = async (req, res) => {
-  // try {
      console.log("➡️ Incoming Data:", req.body);
      console.log("➡️ Uploaded File:", req.file);
+     console.log(req.user)
     const { name, website, location, industry, about, noOfEmployees, established} = req.body;
 
     // validation
@@ -16,8 +16,11 @@ export const registerCompany = async (req, res) => {
     if (companyName) {
       return res.status(400).json({ success: false, message: "Company already exists" });
     }
-    const  user =  req.body.userId ||"652f1a9c8a1b2e0012345678";
+    const  user =   req.user._id ||"652f1a9c8a1b2e0012345678";
     // req.user._id ||
+    if(!user){
+      return res.status(401).json({ success: false, message: "Unauthorized: User not found" });
+    }
     const company = new Company({
       name,
       logo: req.file?.path,
@@ -29,29 +32,22 @@ export const registerCompany = async (req, res) => {
       established,
       userId: user,
     });
-
+    console.log(user)
     await company.save();
-
+    await User.findByIdAndUpdate(user, { $push: { company: company._id } });
+    
     res.status(201).json({
       success: true,
       message: "Company registered successfully",
       company,
     });
-  // }
-  //  catch (error) {
-  //   console.error("Error registering company:", error);
-  //   res.status(500).json({
-  //     success: false,
-  //     message: "Server error. Please try again later.",
-  //   });
-  // }
 };
 
 //get ALl componies 
 
 export const getCompany = async(req, res) => {
       
-            const userId = req.id || "652f1a9c8a1b2e0012345678" ; // logged in user id
+            const userId = req.user._id || "652f1a9c8a1b2e0012345678" ; // logged in user id
             const companies = await Company.find({ userId });
             if (!companies) {
                 return res.status(404).json({

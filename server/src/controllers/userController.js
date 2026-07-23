@@ -73,6 +73,8 @@ export const loginUser = (req, res, next) => {
     // ✅ Login session
     req.login(user, (err) => {
       if (err) return next(err);
+        console.log("✅ Logged in User Session:", req.session);
+                    console.log("✅ Saved User:", req.user);
       return res.status(200).json({
         success: true,
         message: `Welcome back ${user.username}`,
@@ -85,4 +87,16 @@ export const loginUser = (req, res, next) => {
       });
     });
   })(req, res, next); 
+};
+
+
+export const logoutUser = (req, res, next) => {
+  req.logout((err) => {
+    if (err) return next(err);
+
+    return res.status(200).json({
+      success: true,
+      message: "User logged out successfully",
+    });
+  });
 };

@@ -17,6 +17,7 @@ import Profile from "./pages/Profile";
 import EditCompany from "./pages/Admin/EditCompany";
 import JobPostForm from "./pages/Admin/JobPostForm";
 import JobEditFrom from "./pages/Admin/JobEditFrom";
+import JobApplications from "./pages/Admin/JobApplications";
 
 const router = createBrowserRouter([
   {
@@ -57,6 +58,10 @@ const router = createBrowserRouter([
         element:<JobPost/>
       },
       {
+        path:"/admin/job/applications/:id",
+        element:<JobApplications/>
+      },
+      {
         path:"/admin/jobs/new",
         element:<JobPostForm/>
       },
@@ -67,7 +72,8 @@ const router = createBrowserRouter([
       {
         path:"/admin/dashbord",
         element:<Dashbord/>
-      }
+      },
+      
     ],
   },
   // auth

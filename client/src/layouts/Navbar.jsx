@@ -186,8 +186,8 @@ function Navbar() {
   const [loginOpen, setLoginOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
 
-  // const user = useSelector((state) => state.auth.user);
-  const user = {username:"swapnil",role:"recruiter"}
+  const user = useSelector((state) => state.auth.user);
+  // const user = {username:"swapnil",role:"user"}
 
   return (
     <nav className="w-full shadow-md bg-white text-black">

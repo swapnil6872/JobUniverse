@@ -16,7 +16,7 @@ const useGetCompanyById = (companyId) => {
     const fetchCompany = async () => {
       setLoading(true);
       setError(null);
-
+      console.log("use"+companyId)
       try {
         const res = await axios.get(`${COMPANY_API_END_POINT}/get/${companyId}`, {
           withCredentials: true, // if you need cookies/auth

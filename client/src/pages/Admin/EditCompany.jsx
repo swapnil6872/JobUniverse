@@ -95,8 +95,9 @@ const EditCompany = () => {
       submissionData.append("about", formData.about);
       submissionData.append("noOfEmployees", formData.noOfEmployees);
       submissionData.append("established", formData.established);
-      submissionData.append("industry", JSON.stringify(selectedIndustries));
-
+      // submissionData.append("industry", JSON.stringify(selectedIndustries));
+      submissionData.append("industry", selectedIndustries);
+    
       const res = await axios.put(`${ADMIN_API_END_POINT}/company/update/${id}`, submissionData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
@@ -104,7 +105,7 @@ const EditCompany = () => {
       console.log("✅ Updated:", res.data);
       alert("Company updated successfully!");
     } catch (error) {
-      console.error("❌ Error updating company:", error);
+      console.error("Error updating company:", error);
       alert(error.response?.data?.message || "Something went wrong!");
     }
   };

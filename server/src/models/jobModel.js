@@ -80,12 +80,19 @@ const JobSchema = new Schema({
     },
     company:{
        type: Schema.Types.ObjectId,
-       ref: "Company"
+       ref: "Company",
+       required: true
     },
      recruiter: {
       type: Schema.Types.ObjectId,
       ref: "User",
     },
+    applications: [
+    {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Application',
+        }
+    ]
 }, { timestamps: true });
 
 const Job = mongoose.model("Job", JobSchema);

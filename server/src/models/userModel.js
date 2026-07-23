@@ -35,10 +35,10 @@ const userSchema = new Schema({
         designation:{
             type: String,
         },
-        company:{
+        company:[{
             type: Schema.Types.ObjectId,
             ref: "Company",
-        }
+        }]
     }
 },{timestamps:true});
 

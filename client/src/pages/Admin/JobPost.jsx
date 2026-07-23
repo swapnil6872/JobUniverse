@@ -1,37 +1,3 @@
-// import React from 'react'
-
-
-// import { Link } from 'react-router-dom';
-// import { useSelector } from 'react-redux';
-// import useGetAllAdminJobs from '../../hooks/useGetAllAdminJobs';
-
-// function JobPost() {
-//    useGetAllAdminJobs(); // triggers fetch when component mounts
-   
-//      const {allAdminJobs} =useSelector((state) => state.job)
-//      console.log(allAdminJobs)
-   
-//   return (
-//    <div>
-//         <Link to={'/admin/jobs/new'} > Post a Job/Internship </Link>
-//         <h1>
-
-//            <ul>
-//          {allAdminJobs.map((job) => (
-//              <li key={job._id}>{job.title}</li>
-//             ))}
-//           </ul>
-      
-//         </h1>
-       
-
-//     </div>
-//   )
-// }
-
-// export default JobPost
-
-
 import React from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
@@ -41,9 +7,16 @@ const JobPost = () => {
   useGetAllAdminJobs(); // fetch jobs on mount
   const navigate = useNavigate();
   const { allAdminJobs } = useSelector((state) => state.job);
+   const user = useSelector((state) => state.auth.user);
+
+   allAdminJobs.forEach((job)=>{
+    console.log(job.recruiter);
+   })
+
+   
 
   return (
-    <div className="p-6 md:p-10 bg-gray-50 min-h-screen">
+    <div className="p-6 md:p-10 bg-gray-50 min-h-screen mt-2">
       {/* Header */}
       <div className="flex flex-col md:flex-row justify-between items-center mb-8">
         <h1 className="text-2xl md:text-3xl font-bold text-gray-800">
@@ -101,10 +74,10 @@ const JobPost = () => {
                 </Link>
 
                 <button
-                  onClick={() => navigate(`/admin/jobs/${job._id}/applications`)}
+                  onClick={() => navigate(`/admin/job/applications/${job._id}`)}
                   className="bg-green-600 text-white px-4 py-1 rounded hover:bg-green-700 transition text-sm"
                 >
-                  View Applicants
+                  View Applicants 
                 </button>
               </div>
             </div>

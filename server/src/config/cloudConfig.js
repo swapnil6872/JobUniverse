@@ -10,10 +10,21 @@ cloudinary.config({
 
 const storage = new CloudinaryStorage({
     cloudinary: cloudinary,
-    params: {
+    // params: {
+    //   folder: 'JobUniverse_dev',
+    //   allowedFormats: ["jpg", "png", "jpeg"],
+    // }
+      params: async (req, file) => {
+    // detect file extension
+    const ext = file.originalname.split('.').pop().toLowerCase();
+    const isImage = ['jpg', 'jpeg', 'png'].includes(ext);
+
+    return {
       folder: 'JobUniverse_dev',
-      allowedFormats: ["jpg", "png", "jpeg"],
-    }
+      allowedFormats: ['jpg', 'jpeg', 'png', 'pdf', 'docx'],
+      resource_type: isImage ? 'image' : 'raw', // makes PDFs + DOCX work becouse Cloudnary assumes all uploads are images by default
+    };
+  },
   });
 
 export  {

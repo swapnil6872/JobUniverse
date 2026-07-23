@@ -1,9 +1,20 @@
 import React, { useState } from "react";
+import axios from "axios";
+import { toast } from "react-hot-toast";
+import { JOBS_API_END_POINT } from "../../utils/Host";
+import useGetAllCompanies from "../../hooks/useGetAllCompanies";
+import { useSelector } from "react-redux";
 
 const JobPostForm = () => {
   const allOpportunityTypes = ["Job", "Internship"];
   const allEmploymentTypes = ["Full-time", "Part-time"];
   const allLocationTypes = ["Remote", "In-office", "Hybrid"];
+
+  useGetAllCompanies();
+  const { companies } = useSelector((state) => state.company);
+  const { user } = useSelector((state) => state.auth);
+  
+  console.log(companies)
 
   const [formData, setFormData] = useState({
     title: "",
@@ -23,6 +34,7 @@ const JobPostForm = () => {
     location: [],
     locationType: "",
     employmentType: "",
+    company: "",
   });
 
   const allSkills = [
@@ -91,17 +103,72 @@ const JobPostForm = () => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    console.log({
-      ...formData,
-      skills: selectedSkills,
-      perks: selectedPerks,
-      location: selectedLocations,
-    });
-    alert("Job form submitted (console logged) ✅");
-  };
 
+
+const handleSubmit = async (e) => {
+  e.preventDefault();
+
+  const jobData = {
+    ...formData,
+    skills: selectedSkills,
+    perks: selectedPerks,
+    location: selectedLocations,
+    recruiter: user?._id 
+  };
+      console.log("Submitting job data:", jobData);
+      if (!formData.company) {
+      toast.error("Please select a company ");
+      return;
+    }
+
+  try {
+    const loadingToast = toast.loading("Creating job...");
+
+    const { data } = await axios.post(
+      `${JOBS_API_END_POINT}/create`, 
+      jobData,
+      { withCredentials: true } 
+    );
+
+    toast.dismiss(loadingToast);
+    toast.success(data.message || "Job created successfully ");
+
+    // ✅ Reset form after success
+    setFormData({
+      title: "",
+      opportunityType: "",
+      openings: "",
+      about: "",
+      requirements: "",
+      whoApply: "",
+      skills: [],
+      salaryMin: "",
+      salaryMax: "",
+      variableMin: "",
+      variableMax: "",
+      perks: [],
+      startDate: "",
+      endDate: "",
+      location: [],
+      locationType: "",
+      employmentType: "",
+      company: "",
+    });
+    setSelectedSkills([]);
+    setSelectedPerks([]);
+    setSelectedLocations([]);
+  } catch (error) {
+    toast.dismiss();
+    toast.error(
+      error.response?.data?.message ||
+        "Failed to create job. Please try again "
+    );
+    console.error("Job create error:", error);
+  }
+};
+
+
+  
   // ---------- UI ----------
   return (
     <>
@@ -138,6 +205,28 @@ const JobPostForm = () => {
                   {opt}
                 </option>
               ))}
+            </select>
+          </div>
+
+                {/* ✅ Company Selection (new) */}
+          <div>
+            <label className="text-sm font-medium">Select Company</label>
+            <select
+              name="company"
+              value={formData.company}
+              onChange={handleOnChange}
+              className="w-full h-10 border border-gray-300 rounded-md px-3 mt-1 focus:outline-none focus:ring-1 focus:ring-blue-500"
+            >
+              <option value="">Select company</option>
+              {companies?.length > 0 ? (
+                companies.map((comp) => (
+                  <option key={comp._id} value={comp._id}>
+                    {comp.name}
+                  </option>
+                ))
+              ) : (
+                <option disabled>No companies found</option>
+              )}
             </select>
           </div>
 
