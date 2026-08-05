@@ -1,5 +1,13 @@
-export const USER_API_END_POINT = "http://localhost:8000/api/user";
-export const ADMIN_API_END_POINT = "http://localhost:8000/api";
-export const COMPANY_API_END_POINT = "http://localhost:8000/api/company";
-export const JOBS_API_END_POINT = "http://localhost:8000/api/jobs";
-export const APPLICANTS_API_END_POINT = "http://localhost:8000/api/application";
+// export const USER_API_END_POINT = "http://localhost:8000/api/user";
+// export const ADMIN_API_END_POINT = "http://localhost:8000/api";
+// export const COMPANY_API_END_POINT = "http://localhost:8000/api/company";
+// export const JOBS_API_END_POINT = "http://localhost:8000/api/jobs";
+// export const APPLICANTS_API_END_POINT = "http://localhost:8000/api/application";
+
+const BASE_URL = import.meta.env.VITE_API_URL;
+
+export const USER_API_END_POINT = `${BASE_URL}/api/user`;
+export const ADMIN_API_END_POINT = `${BASE_URL}/api`;
+export const COMPANY_API_END_POINT = `${BASE_URL}/api/company`;
+export const JOBS_API_END_POINT = `${BASE_URL}/api/jobs`;
+export const APPLICANTS_API_END_POINT = `${BASE_URL}/api/application`;
