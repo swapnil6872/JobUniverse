@@ -10,16 +10,18 @@ import LocalStrategy from 'passport-local'
 import session from'express-session'
 import companyRoute from './routes/companyRoute.js';
 import applicationRoute from './routes/applicationRoute.js';
+import MongoStore from "connect-mongo";
 
-
+const port = process.env.PORT 
+console.log("PORT+1",port)
 
 const app = express();
 
 const corOptions = {
-      origin: 'http://localhost:5173',
-        credentials: true,
-        methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
-}
+  origin: ["http://localhost:5173", process.env.CLIENT_URL],
+  credentials: true,
+  methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+};
 
 app.use(cors(corOptions));
 app.use(morgan('dev'))
@@ -31,9 +33,12 @@ const sessionOptions= {
     secret:process.env.SECRET,
     resave:false,
     saveUninitialized:true,
+    store: MongoStore.create({
+        mongoUrl: process.env.MONGO_URI,
+    }),
     cookie:{
         expires:Date.now() + 7*24*60*60*1000,
-        maxAge:+ 7*24*60*60*1000,
+        maxAge: 7*24*60*60*1000,
         httpOnly:true
     }
 };
@@ -47,6 +52,12 @@ passport.use(new LocalStrategy({ usernameField: "email" },User.authenticate()));
 passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
 
+app.get("/", (req, res) => {
+    res.status(200).json({
+        success: true,
+        message: "JobUniverse Backend is running 🚀"
+    });
+});
 
 app.use('/api/jobs', jobRoutes);
 app.use('/api/user', userRoute);
