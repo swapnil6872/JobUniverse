@@ -7,10 +7,13 @@ import {
   setSingleApplication,
   setStatusUpdateMessage,
   clearStatusMessage,
+  removeApplicationFromStore, 
+  updateApplicationStatusInStore,  
 } from "../features/Application/applicationSlice";
-import {APPLICANTS_API_END_POINT} from "../utils/Host"
 
-const API_URL = APPLICANTS_API_END_POINT; // 🔧 change base URL as needed
+import { APPLICANTS_API_END_POINT } from "../utils/Host";
+
+const API_URL = APPLICANTS_API_END_POINT;
 
 const useApplication = () => {
   const dispatch = useDispatch();
@@ -22,11 +25,8 @@ const useApplication = () => {
     statusUpdateMessage,
   } = useSelector((state) => state.application);
 
-  // ==============================
   // USER SIDE
-  // ==============================
 
-  // Apply for a Job
   const applyJob = async (jobId, resumeAtApply) => {
     try {
       const res = await axios.post(
@@ -37,81 +37,109 @@ const useApplication = () => {
       dispatch(setStatusUpdateMessage(res.data.message));
       return res.data;
     } catch (err) {
-      console.error("❌ Apply Job Error:", err.response?.data || err.message);
-      dispatch(setStatusUpdateMessage(err.response?.data?.message || "Failed to apply"));
+      console.error("Apply Job Error:", err.response?.data || err.message);
+      dispatch(
+        setStatusUpdateMessage(err.response?.data?.message || "Failed to apply")
+      );
     }
   };
 
-  // Get applied jobs for current user
   const getAppliedJobs = async () => {
     try {
-      const res = await axios.get(`${API_URL}/my`, { withCredentials: true });
+      const res = await axios.get(`${API_URL}/applied`, {
+        withCredentials: true,
+      });
       dispatch(setAppliedJobs(res.data.applications || []));
     } catch (err) {
-      console.error("❌ Get Applied Jobs Error:", err.response?.data || err.message);
+      console.error("Get Applied Jobs Error:", err.response?.data || err.message);
     }
   };
 
-  // ==============================
   // RECRUITER SIDE
-  // ==============================
 
-  // Get all applicants (for all jobs recruiter posted)
   const getAllApplicants = async () => {
     try {
-      const res = await axios.get(`${API_URL}/recruiter/all`, { withCredentials: true });
+      const res = await axios.get(`${API_URL}/recruiter/all`, {
+        withCredentials: true,
+      });
       dispatch(setAllApplications(res.data.applications || []));
     } catch (err) {
-      console.error("❌ Get All Applicants Error:", err.response?.data || err.message);
+      console.error("Get All Applicants Error:", err.response?.data || err.message);
     }
   };
 
-  // Get applicants for a specific job
   const getApplicantsForJob = async (id) => {
     try {
-      const res = await axios.get(`${API_URL}/applicants/${id}`, { withCredentials: true });
-      console.log(res)
+      const res = await axios.get(`${API_URL}/applicants/${id}`, {
+        withCredentials: true,
+      });
       dispatch(setApplicantsForJob(res.data.applications || []));
     } catch (err) {
-      console.error("❌ Get Applicants For Job Error:", err.response?.data || err.message);
+      console.error("Get Applicants Error:", err.response?.data || err.message);
     }
   };
 
-  // Update application status (applied → interview → offered → rejected)
   const updateApplicationStatus = async (applicationId, status) => {
     try {
-      const res = await axios.put(
-        `${API_URL}/${applicationId}`,
+      const res = await axios.patch(
+        `${API_URL}/status/${applicationId}`,
         { status },
         { withCredentials: true }
       );
+
+      // Instantly update Redux state
+      dispatch(updateApplicationStatusInStore({ applicationId, status }));
       dispatch(setStatusUpdateMessage(res.data.message));
       return res.data;
     } catch (err) {
-      console.error("❌ Update Status Error:", err.response?.data || err.message);
-      dispatch(setStatusUpdateMessage(err.response?.data?.message || "Failed to update status"));
+      console.error("Update Status Error:", err.response?.data || err.message);
+      dispatch(
+        setStatusUpdateMessage(
+          err.response?.data?.message || "Failed to update status"
+        )
+      );
+      throw err;
     }
   };
 
-  // ==============================
+  const deleteApplication = async (applicationId) => {
+    try {
+      const res = await axios.delete(
+        `${API_URL}/applicants/${applicationId}`,
+        { withCredentials: true }
+      );
+
+      // Instantly purge item from Redux state
+      dispatch(removeApplicationFromStore(applicationId));
+      dispatch(setStatusUpdateMessage(res.data.message));
+      return res.data;
+    } catch (err) {
+      console.error("Delete Application Error:", err.response?.data || err.message);
+      dispatch(
+        setStatusUpdateMessage(
+          err.response?.data?.message || "Failed to delete application"
+        )
+      );
+      throw err;
+    }
+  };
+
   // UTILS
-  // ==============================
+  
   const clearMessage = () => dispatch(clearStatusMessage());
 
   return {
-    // state
     allApplications,
     appliedJobs,
     applicantsForJob,
     singleApplication,
     statusUpdateMessage,
-
-    // actions
     applyJob,
     getAppliedJobs,
     getAllApplicants,
     getApplicantsForJob,
     updateApplicationStatus,
+    deleteApplication,
     clearMessage,
   };
 };

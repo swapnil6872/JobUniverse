@@ -13,48 +13,57 @@ import { useDispatch, useSelector } from 'react-redux'
 import { setUser } from '../../features/auth/authSlice';
 
 function Register() {
-  
+
   const [loginOpen, setLoginOpen] = useState(false);
-  
+
   const { loading, user } = useSelector(store => store.auth);
   const dispatch = useDispatch();
 
   const navigate = useNavigate();
-    const [input, setInput] = useState({
-        username: "",
-        email: "",
-        password: "",
-        role:"user"
-    });
+  const [input, setInput] = useState({
+    username: "",
+    email: "",
+    password: "",
+    role: "user"
+  });
 
-    const changeEventHandler = (e) => {
-        setInput({ ...input, [e.target.name]: e.target.value });
+  // Redirect if user is already logged in
+  useEffect(() => {
+    if (user) {
+      navigate("/");
     }
+  }, [user, navigate]);
 
-    const submitHandler = async (e) => {
-        e.preventDefault();
-        try {
-            const res = await axios.post(`${USER_API_END_POINT}/register`, input);
-            console.log(res.data);
-            if (res.data.success) {
-                dispatch(setUser(res.data.user))
-                toast.success(res.data.message);
-                navigate("/");
-            }
-        } catch (error) {
-            console.log(error);
-            toast.error(error.response.data.message);
-        }
+  const changeEventHandler = (e) => {
+    setInput({ ...input, [e.target.name]: e.target.value });
+  }
+
+  const submitHandler = async (e) => {
+    e.preventDefault();
+    try {
+      const res = await axios.post(`${USER_API_END_POINT}/register`, input, {
+        withCredentials: true, // Ensures Passport.js session cookie is stored
+      });
+      console.log(res.data);
+      if (res.data.success) {
+        dispatch(setUser(res.data.user))
+        toast.success(res.data.message);
+        navigate("/");
+      }
+    } catch (error) {
+      console.log(error);
+      toast.error(error.response.data.message);
     }
+  }
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
       {/* Navbar */}
-      <nav className="h-[72px] w-full shadow-md bg-white text-black">
-        <div className="max-w-7xl mx-auto px-4 flex justify-between items-center h-full">
+      <nav className="h-[64px] sm:h-[72px] w-full shadow-md bg-white text-black">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 flex justify-between items-center h-full">
           {/* Logo */}
           <Link to="/" className="flex items-center">
-            <h5 className="text-xl font-semibold">
+            <h5 className="text-lg sm:text-xl font-semibold">
               <span className="text-[#00A5EC]">Job</span>Universe
             </h5>
           </Link>
@@ -62,24 +71,24 @@ function Register() {
       </nav>
 
       {/* Hero section */}
-      <div className="flex flex-col items-center flex-1 px-4 py-10">
-        <h1 className="text-2xl md:text-4xl font-extrabold mb-4 text-zinc-800 text-center">
+      <div className="flex flex-col items-center flex-1 px-4 py-6 sm:py-10">
+        <h1 className="text-xl sm:text-2xl md:text-4xl font-extrabold mb-3 sm:mb-4 text-zinc-800 text-center">
           Sign Up and Apply for Free
         </h1>
 
         <img
           src="../src/assets/img/underline_d.svg"
           alt=""
-          className="mb-6 w-32 md:w-48"
+          className="mb-4 sm:mb-6 w-24 sm:w-32 md:w-48"
         />
 
         {/* Card */}
-        <div className="w-full max-w-md bg-white p-6 border border-gray-200 rounded-lg shadow-sm">
-          <GoogleBtn style={"h-13 w-full"} />
+        <div className="w-full max-w-md bg-white p-4 sm:p-6 border border-gray-200 rounded-lg shadow-sm">
+          <GoogleBtn style={"h-12 sm:h-13 w-full"} />
           <HrOr />
 
-          <form className="space-y-4" onSubmit={submitHandler} >
-              {/* Hidden Role */}
+          <form className="space-y-3 sm:space-y-4" onSubmit={submitHandler} >
+            {/* Hidden Role */}
             <input className="hidden" type="text" name="role" value={input.role} required onChange={changeEventHandler} />
             {/* Username */}
             <div>
@@ -164,7 +173,7 @@ function Register() {
               />
             </div>
             <span style={{ display: "none" }}>
-              <input type="text" name="role"  value={"recruiter"}  onChange={changeEventHandler} required/>
+              <input type="text" name="role" value={"recruiter"} onChange={changeEventHandler} required />
             </span>
 
 
@@ -174,14 +183,14 @@ function Register() {
               variant="contained"
               type="submit"
               fullWidth
-              className="bg-[#00A5EC] hover:bg-[#0A66C2] text-white h-12 normal-case"
+              className="bg-[#00A5EC] hover:bg-[#0A66C2] text-white h-11 sm:h-12 normal-case"
             >
               Sign Up
             </Button>
           </form>
 
           {/* Terms */}
-          <p className="text-sm text-gray-600 text-center mt-6">
+          <p className="text-xs sm:text-sm text-gray-600 text-center mt-5 sm:mt-6 px-2">
             By signing up, you agree to our{" "}
             <Link to="/terms" className="text-[#00A5EC] hover:underline">
               Terms and Conditions
@@ -203,7 +212,7 @@ function Register() {
       </div>
 
       <Login open={loginOpen} onClose={() => setLoginOpen(false)} />
-       
+
 
     </div>
   );

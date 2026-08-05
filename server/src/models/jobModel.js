@@ -1,5 +1,8 @@
 import mongoose, { Types } from "mongoose";
 const Schema = mongoose.Schema;
+import Application from "./applicationModel.js"; // <-- Import Application model
+import {cloudinary} from "../config/cloudConfig.js"; // <-- Import Cloudinary config
+import { getPublicIdFromUrl } from "../utils/getPublicIdFromUrl.js";
 
 const JobSchema = new Schema({
     title:{
@@ -86,6 +89,7 @@ const JobSchema = new Schema({
      recruiter: {
       type: Schema.Types.ObjectId,
       ref: "User",
+      required: true, 
     },
     applications: [
     {
@@ -94,6 +98,70 @@ const JobSchema = new Schema({
         }
     ]
 }, { timestamps: true });
+
+JobSchema.pre("findOneAndDelete", async function (next) {
+  try {
+    // Get the job being deleted
+    const job = await this.model.findOne(this.getFilter());
+
+    if (!job) return next();
+
+    // Get all applications for this job
+    const applications = await Application.find({ job: job._id });
+
+    // Delete resumes from Cloudinary
+    // for (const application of applications) {
+    //   if (application.resumeAtApply) {
+    //     try {
+    //       const publicId = getPublicIdFromUrl(application.resumeAtApply);
+
+    //       if (publicId) {
+    //         await cloudinary.uploader.destroy(publicId, {
+    //           resource_type: "raw", // PDFs/DOCX/
+    //         });
+    //       }
+    //     } catch (err) {
+    //       console.error(
+    //         `Failed to delete resume for application ${application._id}:`,
+    //         err.message
+    //       );
+    //     }
+    //   }
+    // }
+    // Delete resumes from Cloudinary
+for (const application of applications) {
+  if (application.resumeAtApply) {
+    try {
+      const publicId = getPublicIdFromUrl(application.resumeAtApply);
+
+      if (publicId) {
+        // Try deleting as an image (jpg, png, webp, gif, etc.)
+        await cloudinary.uploader.destroy(publicId, {
+          resource_type: "image",
+        });
+
+        // Try deleting as a raw file (pdf, doc, docx, zip, etc.)
+        await cloudinary.uploader.destroy(publicId, {
+          resource_type: "raw",
+        });
+      }
+    } catch (err) {
+      console.error(
+        `Failed to delete resume for application ${application._id}:`,
+        err.message
+      );
+    }
+  }
+}
+
+    // Delete all applications
+    await Application.deleteMany({ job: job._id });
+
+    next();
+  } catch (err) {
+    next(err);
+  }
+});
 
 const Job = mongoose.model("Job", JobSchema);
 

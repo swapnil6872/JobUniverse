@@ -13,11 +13,19 @@ import Companies from "./pages/Admin/Companies";
 import ProtectedRoute from "./pages/Admin/ProtectedRoute";
 import JobPost from "./pages/Admin/JobPost";
 import Dashbord from "./pages/Admin/Dashbord";
-import Profile from "./pages/Profile";
+import Profile from "./pages/User/Profile";
 import EditCompany from "./pages/Admin/EditCompany";
 import JobPostForm from "./pages/Admin/JobPostForm";
 import JobEditFrom from "./pages/Admin/JobEditFrom";
 import JobApplications from "./pages/Admin/JobApplications";
+import UserApplications from "./pages/User/UserApplication";
+import ProfileEdit from "./pages/User/ProfileEdit";
+import ManageAccount from "./pages/User/ManageAccount";
+import HelpCenter from "./pages/Extra/HelpCenter";
+import SafetyTips from "./pages/Extra/SafetyTips";
+import TermsAndConditions from "./pages/Extra/TermsAndConditions";
+import KnowMore from "./pages/Extra/KnowMore";
+
 
 const router = createBrowserRouter([
   {
@@ -40,39 +48,71 @@ const router = createBrowserRouter([
         path:"/user/profile",
         element:<Profile/>
       },
+      {
+        path:"/user/profile/edit",
+        element:<ProfileEdit/>
+      },
+      {
+        path:"/user/applications",
+        element:<UserApplications/>
+      },
+      {
+        path:"/user/account",
+        element:<ManageAccount/>
+      },
+      {
+        path:"/help-center",
+        element:<HelpCenter/>
+      },
+      {
+        path:"/safety-tips",
+        element:<SafetyTips/>
+      },
+      {
+        path:"/terms-and-conditions",
+        element:<TermsAndConditions/>
+      },
+      {
+        path:"/know-more",
+        element:<KnowMore/>
+      },
+
       // admin routes
-       {
+      {
         path:"/admin/company",
-        element:<Companies/>
+        element: <ProtectedRoute> <Companies/> </ProtectedRoute>
       },  
       {
         path:"/admin/company/new",
-        element:<CompaniesForm/>
+        element: <ProtectedRoute><CompaniesForm/></ProtectedRoute>
       },
       {
         path:"/admin/company/edit/:id",
-        element:<EditCompany/>
+        element:<ProtectedRoute><EditCompany/></ProtectedRoute>
       },        
       {
         path:"/admin/job",
-        element:<JobPost/>
+        element:<ProtectedRoute><JobPost/></ProtectedRoute>
       },
       {
         path:"/admin/job/applications/:id",
-        element:<JobApplications/>
+        element:<ProtectedRoute><JobApplications/></ProtectedRoute>
       },
       {
         path:"/admin/jobs/new",
-        element:<JobPostForm/>
+        element:<ProtectedRoute><JobPostForm/></ProtectedRoute>
       },
       {
         path:"/admin/jobs/edit/:id",
-        element:<JobEditFrom/>
+        element:<ProtectedRoute><JobEditFrom/></ProtectedRoute>
       },
       {
         path:"/admin/dashbord",
-        element:<Dashbord/>
+        element:<ProtectedRoute><Dashbord/></ProtectedRoute>
       },
+      {
+      
+      }
       
     ],
   },

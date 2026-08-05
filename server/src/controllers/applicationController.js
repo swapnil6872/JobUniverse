@@ -1,6 +1,8 @@
 import Application from "../models/applicationModel.js";
 import Job from "../models/jobModel.js";
 import User from "../models/userModel.js";
+import { cloudinary } from "../config/cloudConfig.js";
+import { getPublicIdFromUrl } from "../utils/getPublicIdFromUrl.js";
 
 export const applyJob = async (req, res) => {
   const { id } = req.body; // Job ID from form
@@ -82,35 +84,6 @@ export const getAppliedJobs = async (req, res) => {
 
 // for recruiters
 
-// export const getApplicantsForJob = async (req, res) => {
-//   const { jobId } = req.params;
-
-//   // Check if job exists
-//   const job = await Job.findById(jobId);
-//   if (!job) {
-//     return res.status(404).json({ success: false, message: "Job not found" });
-//   }
-
-//   // Get all applications for this job
-//   const applications = await Application.find({ job: jobId })
-//     .populate({
-//       path: "applicant",
-//       model: "User",
-//       select: "name email phone profilePic",
-//     })
-//     .sort({ createdAt: -1 });
-
-//   if (!applications.length) {
-//     return res.status(404).json({ success: false, message: "No applicants found" });
-//   }
-
-//   res.status(200).json({
-//     success: true,
-//     total: applications.length,
-//     applications,
-//   });
-// };
-
 export const getApplicantsForJob = async (req, res) => {
   try {
     const { id } = req.params;
@@ -148,8 +121,10 @@ export const getApplicantsForJob = async (req, res) => {
   }
 };
 
-
 export const updateApplicationStatus = async (req, res) => {
+    console.log("PATCH HIT");
+  console.log(req.params);
+  console.log(req.body);
   const { applicationId } = req.params;
   const { status } = req.body;
 
@@ -181,7 +156,7 @@ export const updateApplicationStatus = async (req, res) => {
 };
 
 export const getAllApplicants = async (req, res) => {
-  const recruiterId = req.user?._id || "652f1a9c8a1b2e0012345678"; // from auth middleware
+  const recruiterId = req.user?._id ; // from auth middleware
 
   // Find all jobs created by this recruiter
   const jobs = await Job.find({ recruiter: recruiterId }).select("_id");
@@ -217,7 +192,20 @@ export const getAllApplicants = async (req, res) => {
   });
 };
 
-export const getDeleteApplication = async(req,res) =>{
-  
-}
-   
+export const deleteApplication = async (req, res) => {
+  const { applicationId } = req.params;
+  console.log("DELETE HIT", applicationId);
+  const application = await Application.findByIdAndDelete(applicationId);
+
+  if (!application) {
+    return res.status(404).json({
+      success: false,
+      message: "Application not found",
+    });
+  }
+
+  return res.status(200).json({
+    success: true,
+    message: "Application deleted successfully",
+  });
+};

@@ -12,6 +12,7 @@ import companyRoute from './routes/companyRoute.js';
 import applicationRoute from './routes/applicationRoute.js';
 
 
+
 const app = express();
 
 const corOptions = {
@@ -51,6 +52,7 @@ app.use('/api/jobs', jobRoutes);
 app.use('/api/user', userRoute);
 app.use("/api/company", companyRoute);
 app.use("/api/application", applicationRoute);
+
 
 
 app.use((err, req, res, next) => {

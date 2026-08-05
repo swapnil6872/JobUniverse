@@ -1,54 +1,71 @@
-import { Link } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
-import { useState } from "react";
+import CircularProgress from "@mui/material/CircularProgress";
+import axios from "axios";
+import { useDispatch, useSelector } from "react-redux";
+import toast from "react-hot-toast";
+
 import Login from "./Login";
 import { USER_API_END_POINT } from "../../utils/Host";
-import { useDispatch ,useSelector} from "react-redux";
-import { useNavigate } from "react-router-dom";
-import { setUser } from "../../features/auth/authSlice";
-import toast from 'react-hot-toast';
-import axios from "axios";
-
+import { setUser, setLoading } from "../../features/auth/authSlice";
 
 function EmployeeRegister() {
- const [loginOpen, setLoginOpen] = useState(false);
- const { loading, user } = useSelector(store => store.auth);
+  const [loginOpen, setLoginOpen] = useState(false);
   const dispatch = useDispatch();
-
   const navigate = useNavigate();
-    const [input, setInput] = useState({
-        username: "",
-        email: "",
-        password: "",
-        role:"recruiter"
-    });
 
-    const changeEventHandler = (e) => {
-        setInput({ ...input, [e.target.name]: e.target.value });
+  const { loading, user } = useSelector((store) => store.auth);
+
+  const [input, setInput] = useState({
+    username: "",
+    email: "",
+    password: "",
+    role: "recruiter",
+  });
+
+  // Redirect if user is already logged in
+  useEffect(() => {
+    if (user) {
+      navigate("/");
+    }
+  }, [user, navigate]);
+
+  const changeEventHandler = (e) => {
+    setInput({ ...input, [e.target.name]: e.target.value });
+  };
+
+  const submitHandler = async (e) => {
+    e.preventDefault();
+
+    if (!input.username.trim() || !input.email.trim() || !input.password.trim()) {
+      return toast.error("Please fill in all required fields.");
     }
 
-    const submitHandler = async (e) => {
-        e.preventDefault();
-        try {
-            console.log(input)
-            const res = await axios.post(`${USER_API_END_POINT}/register`, input);
-            console.log(res.data);
-            if (res.data.success) {
-                dispatch(setUser(res.data.user))
-                navigate("/");
-                toast.success(res.data.message);
-            }
-        } catch (error) {
-            console.log(error);
-            toast.error(error.response.data.message);
-        }
-    }
+    try {
+      dispatch(setLoading(true));
+      const res = await axios.post(`${USER_API_END_POINT}/register`, input, {
+        withCredentials: true, // Ensures Passport.js session cookie is stored
+      });
 
+      if (res.data.success) {
+        dispatch(setUser(res.data.user));
+        toast.success(res.data.message || "Registered successfully!");
+        navigate("/");
+      }
+    } catch (error) {
+      console.error("Registration error:", error);
+      toast.error(
+        error.response?.data?.message || "Registration failed. Please try again."
+      );
+    } finally {
+      dispatch(setLoading(false));
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
- 
       {/* Navbar */}
       <nav className="h-[72px] w-full shadow-md bg-white text-black">
         <div className="max-w-7xl mx-auto px-4 flex justify-between items-center h-full">
@@ -64,21 +81,11 @@ function EmployeeRegister() {
       {/* Hero section */}
       <div className="flex flex-col items-center flex-1 px-4 py-10">
         <h1 className="text-2xl md:text-4xl font-extrabold mb-4 text-zinc-800 text-center">
-          Sign Up and Apply for Free
+          Sign Up to Hire Talent
         </h1>
 
-        <img
-          src="../src/assets/img/underline_d.svg"
-          alt=""
-          className="mb-6 w-32 md:w-48"
-        />
-
-        {/* Card */}
         <div className="w-full max-w-md bg-white p-6 border border-gray-200 rounded-lg shadow-sm">
-          {/* <GoogleBtn style={"h-13 w-full"} />
-          <HrOr /> */}
-
-          <form className="space-y-4" onSubmit={submitHandler} >
+          <form className="space-y-4" onSubmit={submitHandler}>
             {/* Username */}
             <div>
               <label
@@ -88,12 +95,13 @@ function EmployeeRegister() {
                 Username
               </label>
               <TextField
-                label="Johndoe Stark"
+                placeholder="Johndoe Stark"
                 variant="outlined"
                 fullWidth
                 id="username"
                 name="username"
                 value={input.username}
+                onChange={changeEventHandler}
                 InputProps={{
                   sx: {
                     height: "48px",
@@ -101,7 +109,6 @@ function EmployeeRegister() {
                     fontSize: "0.9rem",
                   },
                 }}
-                onChange={changeEventHandler}
               />
             </div>
 
@@ -114,12 +121,14 @@ function EmployeeRegister() {
                 Email
               </label>
               <TextField
-                label="johndoe@example.com"
+                placeholder="johndoe@example.com"
                 variant="outlined"
                 fullWidth
                 id="email"
                 name="email"
+                // type="email"
                 value={input.email}
+                onChange={changeEventHandler}
                 InputProps={{
                   sx: {
                     height: "48px",
@@ -127,27 +136,27 @@ function EmployeeRegister() {
                     fontSize: "0.9rem",
                   },
                 }}
-                onChange={changeEventHandler}
               />
             </div>
 
             {/* Password */}
             <div>
               <label
-                htmlFor="Password"
+                htmlFor="password"
                 className="block mb-1 text-sm text-gray-600"
               >
                 Password
               </label>
               <TextField
-                label="Must be at least 6 characters"
+                placeholder="Must be at least 6 characters"
                 variant="outlined"
                 fullWidth
                 type="password"
-                id="Password"
+                id="password"
                 name="password"
+                autoComplete="new-password"
                 value={input.password}
-                 autoComplete="true"
+                onChange={changeEventHandler}
                 InputProps={{
                   sx: {
                     height: "48px",
@@ -155,22 +164,25 @@ function EmployeeRegister() {
                     fontSize: "0.9rem",
                   },
                 }}
-                onChange={changeEventHandler}
               />
             </div>
-       
+
             {/* Hidden Role */}
-            <input className="hidden" type="text" name="role" value={input.role} required onChange={changeEventHandler} />
-            
+            <input type="hidden" name="role" value={input.role} />
 
             {/* Button */}
             <Button
               variant="contained"
               type="submit"
               fullWidth
-              className="bg-[#00A5EC] hover:bg-[#0A66C2] text-white h-12 normal-case"
+              disabled={loading}
+              className="bg-[#00A5EC] hover:bg-[#0A66C2] text-white h-12 normal-case font-medium"
             >
-              Sign Up
+              {loading ? (
+                <CircularProgress size={24} color="inherit" />
+              ) : (
+                "Sign Up as Recruiter"
+              )}
             </Button>
           </form>
 
@@ -184,11 +196,12 @@ function EmployeeRegister() {
           </p>
 
           {/* Already registered */}
-          <p className="text-center mt-4 text-sm">
+          <p className="text-center mt-4 text-sm text-gray-600">
             Already registered?{" "}
             <button
+              type="button"
               onClick={() => setLoginOpen(true)}
-              className="text-[#00A5EC]  border-[#00A5EC]  py-1 rounded-md font-medium "
+              className="text-[#00A5EC] font-medium hover:underline cursor-pointer"
             >
               Login
             </button>
@@ -201,5 +214,4 @@ function EmployeeRegister() {
   );
 }
 
-export default EmployeeRegister
-
+export default EmployeeRegister;

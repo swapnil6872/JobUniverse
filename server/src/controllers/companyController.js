@@ -1,5 +1,8 @@
 import Company from '../models/companyModel.js';
 import User from '../models/userModel.js';
+import { cloudinary } from "../config/cloudConfig.js";
+import { getPublicIdFromUrl } from "../utils/getPublicIdFromUrl.js";
+
 
 
 export const registerCompany = async (req, res) => {
@@ -80,6 +83,57 @@ export const getCompanyById = async(req, res) => {
 }
 
 //update company by id
+// export const updateCompany = async (req, res) => {
+//   console.log("➡️ Update Data:", req.body);
+//   console.log("➡️ Uploaded File:", req.file);
+
+//   const { id } = req.params;
+//   const { name, website, location, industry, about, noOfEmployees, established } = req.body;
+
+//   // 1️⃣ Check if company exists
+//   const company = await Company.findById(id);
+//   if (!company) {
+//     return res.status(404).json({ success: false, message: "Company not found" });
+//   }
+
+//   // 2️⃣ Validate required fields
+//   if (!name || !website || !location || !industry || !about || !noOfEmployees || !established) {
+//     return res.status(400).json({ success: false, message: "All fields are required" });
+//   }
+
+//   // 3️⃣ Prevent duplicate name (excluding current company)
+//   const existingCompany = await Company.findOne({ name, _id: { $ne: id } });
+//   if (existingCompany) {
+//     return res.status(400).json({ success: false, message: "Company name already exists" });
+//   }
+
+//   // 4️⃣ Update fields
+//   company.name = name;
+//   company.website = website;
+//   company.location = location;
+//   company.industry = industry;
+//   company.about = about;
+//   company.noOfEmployees = noOfEmployees;
+//   company.established = established;
+
+//   // 5️⃣ Update logo (required)
+//   if (req.file?.path) {
+//     company.logo = req.file.path; // Cloudinary/local path
+//   } else if (!company.logo) {
+//     return res.status(400).json({ success: false, message: "Logo cannot be empty" });
+//   }
+
+//   // 6️⃣ Save updates
+//   await company.save();
+
+//   res.status(200).json({
+//     success: true,
+//     message: "Company updated successfully",
+//     company,
+//   });
+// };
+
+
 export const updateCompany = async (req, res) => {
   console.log("➡️ Update Data:", req.body);
   console.log("➡️ Uploaded File:", req.file);
@@ -104,18 +158,31 @@ export const updateCompany = async (req, res) => {
     return res.status(400).json({ success: false, message: "Company name already exists" });
   }
 
-  // 4️⃣ Update fields
+  // 4️⃣ Update text fields
   company.name = name;
   company.website = website;
   company.location = location;
-  company.industry = industry;
+  // company.industry = industry;
+  company.industry = Array.isArray(industry)
+  ? industry
+  : [industry];
   company.about = about;
   company.noOfEmployees = noOfEmployees;
   company.established = established;
 
-  // 5️⃣ Update logo (required)
+  // 5️⃣ Update logo & delete old logo from Cloudinary
   if (req.file?.path) {
-    company.logo = req.file.path; // Cloudinary/local path
+    // Check if an old logo exists before deleting
+    if (company.logo) {
+      const oldLogoPublicId = getPublicIdFromUrl(company.logo);
+      if (oldLogoPublicId) {
+        await cloudinary.uploader.destroy(oldLogoPublicId);
+        console.log("🗑️ Old Cloudinary logo deleted:", oldLogoPublicId);
+      }
+    }
+
+    // Set new logo path (Cloudinary URL returned by Multer)
+    company.logo = req.file.path;
   } else if (!company.logo) {
     return res.status(400).json({ success: false, message: "Logo cannot be empty" });
   }
@@ -135,6 +202,7 @@ export const updateCompany = async (req, res) => {
 export const deleteCompany = async (req, res) => {
   
   const { id } = req.params;
+
   const company = await Company.findByIdAndDelete(id);
 
   if (!company) {

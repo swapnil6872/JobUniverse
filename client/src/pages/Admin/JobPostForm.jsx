@@ -4,6 +4,7 @@ import { toast } from "react-hot-toast";
 import { JOBS_API_END_POINT } from "../../utils/Host";
 import useGetAllCompanies from "../../hooks/useGetAllCompanies";
 import { useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 
 const JobPostForm = () => {
   const allOpportunityTypes = ["Job", "Internship"];
@@ -13,6 +14,7 @@ const JobPostForm = () => {
   useGetAllCompanies();
   const { companies } = useSelector((state) => state.company);
   const { user } = useSelector((state) => state.auth);
+  const navigate = useNavigate();
   
   console.log(companies)
 
@@ -62,7 +64,6 @@ const JobPostForm = () => {
   const [selectedPerks, setSelectedPerks] = useState([]);
   const [selectedLocations, setSelectedLocations] = useState([]);
 
-  // ---------- Handlers ----------
   const handleAddSkill = (e) => {
     const value = e.target.value;
     if (value && !selectedSkills.includes(value)) {
@@ -113,7 +114,7 @@ const handleSubmit = async (e) => {
     skills: selectedSkills,
     perks: selectedPerks,
     location: selectedLocations,
-    recruiter: user?._id 
+    // recruiter: user?._id 
   };
       console.log("Submitting job data:", jobData);
       if (!formData.company) {
@@ -132,6 +133,7 @@ const handleSubmit = async (e) => {
 
     toast.dismiss(loadingToast);
     toast.success(data.message || "Job created successfully ");
+    navigate("/admin/job"); 
 
     // ✅ Reset form after success
     setFormData({
@@ -167,9 +169,6 @@ const handleSubmit = async (e) => {
   }
 };
 
-
-  
-  // ---------- UI ----------
   return (
     <>
       <h1 className="text-center font-semibold my-4 text-lg sm:text-xl">
@@ -208,7 +207,7 @@ const handleSubmit = async (e) => {
             </select>
           </div>
 
-                {/* ✅ Company Selection (new) */}
+                {/* Company Selection (new) */}
           <div>
             <label className="text-sm font-medium">Select Company</label>
             <select

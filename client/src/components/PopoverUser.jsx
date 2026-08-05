@@ -1,73 +1,21 @@
-// import * as React from 'react';
-// import Popover from '@mui/material/Popover';
-// import Typography from '@mui/material/Typography';
-// import Button from '@mui/material/Button';
-// import Avatar from '@mui/material/Avatar';
-
-// export default function PopoverUser({user}) {
-//   const [anchorEl, setAnchorEl] = React.useState(null);
-
-//   const handleClick = (event) => {
-//     setAnchorEl(event.currentTarget);
-//   };
-
-//   const handleClose = () => {
-//     setAnchorEl(null);
-//   };
-
-//   const open = Boolean(anchorEl);
-//   const id = open ? 'simple-popover' : undefined;
-
-//   return (
-//     <div>
-//         <div className={open ? "bg-[#008BDC]/20" : "bg-transparent"}>
-//         <Button aria-describedby={id}  onClick={handleClick}  >
-//          <Avatar alt="Remy Sharp" src="/static/images/avatar/1.jpg" />
-//       </Button>
-//       </div>
-//       <Popover
-//         id={id}
-//         sx={{ mt: 1.3 }}
-//         open={open}
-//         anchorEl={anchorEl}
-//         onClose={handleClose}
-//         anchorOrigin={{
-//           vertical: 'bottom',
-//           horizontal: 'left',
-//         }}
-//       >
-//         <Typography sx={{ py: 2 }}>
-           
-//           <div className='px-4 space-y-1'>
-//              <p className='font-bold'> {user.name}</p>
-//              <p className='text-gray-500'>{user.email}</p>
-//           </div>
-//           <hr />
-//           <div>
-            
-//           </div>
-//         </Typography>
-
-//       </Popover>
-//     </div>
-//   );
-// }
-
 import * as React from 'react';
 import Popover from '@mui/material/Popover';
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import { ChevronRight, ChevronDown } from 'lucide-react';
-import { Link, useNavigate } from 'react-router-dom'; // if using React Router
+import { Link, useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
-import { setUser } from '../features/auth/authSlice';
-import toast, { Toaster } from 'react-hot-toast';
-import Profile from '../pages/Profile';
+import axios from 'axios';
+import toast from 'react-hot-toast';
+
+import { logout } from '../features/auth/authSlice';
+import { USER_API_END_POINT } from '../utils/Host';
 
 export default function PopoverUser({ user }) {
   const [anchorEl, setAnchorEl] = React.useState(null);
   const dispatch = useDispatch();
   const navigate = useNavigate();
+
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
   };
@@ -76,13 +24,34 @@ export default function PopoverUser({ user }) {
     setAnchorEl(null);
   };
 
+  const handleLogout = async () => {
+    try {
+      handleClose(); // Close popover immediately
+      // Clear Passport.js session on backend
+      await axios.get(`${USER_API_END_POINT}/logout`, {
+        withCredentials: true,
+      });
+    } catch (err) {
+      console.error("Backend logout error:", err);
+    } finally {
+      // Purge local auth state and navigate home
+      dispatch(logout());
+      toast.success("User logged out successfully");
+      navigate("/", { replace: true });
+    }
+  };
+
   const open = Boolean(anchorEl);
   const id = open ? 'user-popover' : undefined;
 
   return (
-    <div className='ml-[-10px]'>
-      <Button aria-describedby={id} onClick={handleClick} className="p-0" >
-        <Avatar  alt={user.name} src="/static/images/avatar/1.jpg" /> &nbsp;  <p className='lg:hidden'>{user.username}</p>
+    <div className="ml-[-10px]">
+      <Button aria-describedby={id} onClick={handleClick} className="p-0">
+        <Avatar alt={user?.username || "User"} src="/static/images/avatar/1.jpg" />
+        &nbsp;
+        <p className="lg:hidden text-sm font-medium text-gray-700">
+          {user?.username}
+        </p>
       </Button>
 
       <Popover
@@ -105,12 +74,12 @@ export default function PopoverUser({ user }) {
       >
         {/* Top Section */}
         <div className="p-4">
-          {/* <p className="font-semibold">{user.username.charAt(0).toUpperCase() + user.username.slice(1)}</p> */}
-          <p className="font-semibold">
-            {user?.username?.charAt(0).toUpperCase() +
-              user?.username?.slice(1) || "User"}
+          <p className="font-semibold text-gray-900">
+            {user?.username
+              ? user.username.charAt(0).toUpperCase() + user.username.slice(1)
+              : "User"}
           </p>
-          <p className="text-sm text-gray-500">{user.email}</p>
+          <p className="text-sm text-gray-500 truncate">{user?.email}</p>
         </div>
         <hr />
 
@@ -121,7 +90,8 @@ export default function PopoverUser({ user }) {
             <span className="font-medium">4.1</span>
           </div>
           <span className="text-xs text-blue-600 flex items-center gap-1">
-            Know More <ChevronRight size={14} />
+            <Link to="/know-more">Know More</Link>
+            <ChevronRight size={14} />
           </span>
         </div>
         <hr />
@@ -130,41 +100,81 @@ export default function PopoverUser({ user }) {
         <div className="py-1">
           <Link
             to="/user/profile"
-            className="block px-4 py-2 text-sm hover:bg-gray-50"
+            onClick={handleClose}
+            className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
           >
-            <Profile/>
+            Profile
           </Link>
           <Link
-            to="/applications"
-            className="block px-4 py-2 text-sm hover:bg-gray-50"
+            to="/user/applications"
+            onClick={handleClose}
+            className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
           >
             My Applications
           </Link>
-          <Link
-            to="/bookmarks"
-            className="block px-4 py-2 text-sm hover:bg-gray-50"
+          {/* <Link
+            // to="/bookmarks"
+            onClick={handleClose}
+            className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 disabled:z-auto disabled:opacity-50 disabled:cursor-not-allowed"
           >
             My Bookmarks
-          </Link>
-          <Link
+          </Link> */}
+          <span
+            className="flex items-center justify-between px-3 sm:px-4 py-2 text-sm text-gray-400 cursor-not-allowed select-none"
+            aria-disabled="true"
+          >
+            <span className="truncate">My Bookmarks</span>
+
+            <span className="ml-2 shrink-0 rounded bg-gray-100 px-2 py-0.5 text-[10px] sm:text-xs text-gray-500">
+              Soon
+            </span>
+          </span>
+          {/* <Link
             to="/resume"
-            className="block px-4 py-2 text-sm hover:bg-gray-50"
+            onClick={handleClose}
+            className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
           >
             Edit Resume
-          </Link>
-          <Link
+          </Link> */}
+          <span
+            className="flex items-center justify-between px-3 sm:px-4 py-2 text-sm text-gray-400 cursor-not-allowed select-none"
+            aria-disabled="true"
+          >
+            <span className="truncate">Edit Resume</span>
+
+            <span className="ml-2 shrink-0 rounded bg-gray-100 px-2 py-0.5 text-[10px] sm:text-xs text-gray-500">
+              Soon
+            </span>
+          </span>
+          {/* <Link
             to="/preferences"
-            className="block px-4 py-2 text-sm hover:bg-gray-50"
+            onClick={handleClose}
+            className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
           >
             Edit Preferences
-          </Link>
+          </Link> */}
+          <span
+            className="flex items-center justify-between px-3 sm:px-4 py-2 text-sm text-gray-400 cursor-not-allowed select-none"
+            aria-disabled="true"
+          >
+            <span className="truncate">Edit Preferences</span>
+
+            <span className="ml-2 shrink-0 rounded bg-gray-100 px-2 py-0.5 text-[10px] sm:text-xs text-gray-500">
+              Soon
+            </span>
+          </span>
           <Link
-            to="/safety"
-            className="block px-4 py-2 text-sm hover:bg-gray-50"
+            to="/safety-tips"
+            onClick={handleClose}
+            className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
           >
             Safety Tips
           </Link>
-          <Link to="/help" className="block px-4 py-2 text-sm hover:bg-gray-50">
+          <Link
+            to="/help-center"
+            onClick={handleClose}
+            className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
+          >
             Help Center
           </Link>
         </div>
@@ -176,21 +186,18 @@ export default function PopoverUser({ user }) {
           <ChevronDown size={16} />
         </div>
         <Link
-          to="/account"
-          className="block px-4 py-2 text-sm pl-6 hover:bg-gray-50"
+          to="/user/account"
+          onClick={handleClose}
+          className="block px-4 py-2 text-sm pl-6 text-gray-700 hover:bg-gray-50"
         >
           Manage Account
         </Link>
         <hr />
 
-        {/* Logout */}
+        {/* Logout Button */}
         <button
-          onClick={() => {
-            dispatch(setUser(null));
-
-            toast.success("user Logout sucessfully");
-          }}
-          className="w-full text-left px-4 py-2 text-sm hover:bg-gray-50"
+          onClick={handleLogout}
+          className="w-full text-left px-4 py-2 text-sm text-rose-600 font-medium hover:bg-rose-50 transition-colors cursor-pointer"
         >
           Logout
         </button>
@@ -198,4 +205,3 @@ export default function PopoverUser({ user }) {
     </div>
   );
 }
-

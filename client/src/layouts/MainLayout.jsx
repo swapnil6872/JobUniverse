@@ -7,8 +7,8 @@ function MainLayout() {
   return (
     <div className="min-h-screen flex flex-col">
 
-      <header>
-        <Navbar />
+      <header className="sticky top-0 z-50">
+        <Navbar/>
       </header>
 
       <main>

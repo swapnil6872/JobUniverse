@@ -8,30 +8,19 @@ import { X } from "lucide-react";
 import Tabs from "../../components/Tabs";
 import Form from "./Form";
 
-
-// const style2 = {
-//   position: "absolute",
-//   top: "50%",
-//   left: "50%",
-//   transform: "translate(-50%, -50%)",
-//   width: 450,
-//   bgcolor: "background.paper",
-//   boxShadow: 24,
-//   borderRadius: 1,
-//   p: 4,
-//   padding: "16px 24px",
-// };
-
 const style = {
   position: "absolute",
-  top: "20%",                // 🔑 fixed distance from top of screen
+  top: { xs: "10%", sm: "20%" },   // less top offset on short mobile screens
   left: "50%",
-  transform: "translateX(-50%)", // only center horizontally
-  width: 384,
+  transform: "translateX(-50%)",   // only center horizontally
+  width: { xs: "92vw", sm: 384 },  // fluid width on mobile, fixed on larger screens
+  maxWidth: 384,
+  maxHeight: { xs: "85vh", sm: "80vh" },
+  overflowY: "auto",
   bgcolor: "background.paper",
   boxShadow: 24,
   borderRadius: 1,
-  p: 3,
+  p: { xs: 2, sm: 3 },
 };
 
 function Login({ open, onClose }) {
@@ -47,7 +36,7 @@ function Login({ open, onClose }) {
         <Typography id="modal-modal-title" variant="h6" component="h2">
 
           <div className="flex justify-between flex-row-reverse text-gray-500 mb-1">
-            <X onClick={onClose} />
+            <X onClick={onClose} className="cursor-pointer" size={22} />
           </div>
            
           <div className="flex justify-center">
@@ -63,5 +52,3 @@ function Login({ open, onClose }) {
 }
 
 export default Login;
-
-

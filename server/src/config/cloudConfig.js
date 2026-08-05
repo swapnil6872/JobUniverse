@@ -1,5 +1,6 @@
 import { v2 as cloudinary } from 'cloudinary';
 import { CloudinaryStorage } from 'multer-storage-cloudinary';
+// import path from "path";
 
 
 cloudinary.config({
@@ -18,6 +19,21 @@ const storage = new CloudinaryStorage({
     // detect file extension
     const ext = file.originalname.split('.').pop().toLowerCase();
     const isImage = ['jpg', 'jpeg', 'png'].includes(ext);
+    // const isDocument = /\.(pdf|doc|docx)$/i.test(file.originalname);
+
+//     if (isDocument) {
+//       // return {
+//       //   folder: "resumes",
+//       //   resource_type: "raw", // Keeps format intact
+//       //   public_id: `${Date.now()}-${file.originalname}`, // Preserves original extension like .pdf
+//       // };
+//       return {
+//   folder: "resumes",
+//   resource_type: "raw",
+//   // public_id: `${Date.now()}-${path.parse(file.originalname).name}`,
+//   public_id: `${Date.now()}-${file.originalname}`,
+// };
+//     }
 
     return {
       folder: 'JobUniverse_dev',

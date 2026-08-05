@@ -5,7 +5,7 @@ import { JOBS_API_END_POINT } from "../../utils/Host";
 import useGetAllCompanies from "../../hooks/useGetAllCompanies";
 import { useSelector } from "react-redux";
 import useGetJobById from "../../hooks/useGetJobById";
-import { useParams } from "react-router-dom";
+import { Navigate, useNavigate, useParams } from "react-router-dom";
 import { useEffect } from "react";
 
 const JobEditFrom = () => {
@@ -17,6 +17,7 @@ const JobEditFrom = () => {
   useGetJobById(id);
   const { singleJob } = useSelector((state) => state.job);
   console.log(singleJob);
+  const navigate = useNavigate();
 
 // Prefill form when singleJob is loaded
   useEffect(() => {
@@ -181,6 +182,7 @@ const JobEditFrom = () => {
 
       toast.dismiss(loadingToast);
       toast.success(data.message || "Job updated successfully!");
+      navigate("/admin/job")
     } catch (error) {
       toast.dismiss();
       toast.error(
@@ -190,8 +192,6 @@ const JobEditFrom = () => {
     }
   };
 
-  
-  // ---------- UI ----------
   return (
     <>
       <h1 className="text-center font-semibold my-4 text-lg sm:text-xl">

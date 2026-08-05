@@ -7,10 +7,10 @@ function StudentLogin() {
     <div className="mt-6">
       <div>
         {/* Google Button */}
-        <GoogleBtn/>
+        <GoogleBtn />
 
         <HrOr />
-         
+
         {/* <form action="">
           <div>
           <div>
@@ -77,7 +77,7 @@ function StudentLogin() {
           </div>
         </div>
         </form> */}
-        
+
       </div>
     </div>
   );
