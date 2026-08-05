@@ -1,6 +1,8 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
 import{Instagram ,Facebook,Twitter,Linkedin } from 'lucide-react'
+import playStore from "../assets/img/playstore.svg";
+import appStore from "../assets/img/appstore.svg";
 
 function Footer() {
   return (
@@ -37,8 +39,8 @@ function Footer() {
          {/* second section */}
         <div className='flex flex-col md:flex-row justify-between items-center gap-4 w-full border-t pt-4'>
           <div className='flex items-center gap-4'>
-            <Link> <img src="../src/assets/img/playstore.svg" alt="Play Store"  className='w-32 h-10 object-contain'/> </Link>
-            <Link> <img src="../src/assets/img/appstore.svg" alt="App Store" className='w-32 h-10 object-contain'/> </Link>
+            <Link> <img src={playStore} alt="Play Store"  className='w-32 h-10 object-contain'/> </Link>
+            <Link> <img src={appStore} alt="App Store" className='w-32 h-10 object-contain'/> </Link>
             <Link><Instagram/></Link>
             <Link><Facebook/></Link>
             <Link><Twitter/></Link>
