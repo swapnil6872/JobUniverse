@@ -17,6 +17,9 @@ console.log("PORT+1",port)
 
 const app = express();
 
+// 1. CRUCIAL FOR RENDER: Trust reverse proxy
+app.set("trust proxy", 1);
+
 const corOptions = {
   origin: ["http://localhost:5173", process.env.CLIENT_URL],
   credentials: true,
@@ -28,18 +31,23 @@ app.use(morgan('dev'))
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+const isProduction = process.env.NODE_ENV === "production";
 
 const sessionOptions= {
     secret:process.env.SECRET,
     resave:false,
     saveUninitialized:true,
+    proxy: true,
     store: MongoStore.create({
         mongoUrl: process.env.MONGO_URI,
+        touchAfter: 24 * 3600
     }),
     cookie:{
-        expires:Date.now() + 7*24*60*60*1000,
+        // expires:Date.now() + 7*24*60*60*1000,
         maxAge: 7*24*60*60*1000,
-        httpOnly:true
+        httpOnly:true,
+        secure: isProduction, // Set to true in production (HTTPS required)
+        sameSite: isProduction ? "none" : "lax" // "none" allows cross-origin cookies on HTTPS
     }
 };
 
